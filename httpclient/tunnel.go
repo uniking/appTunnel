@@ -15,8 +15,7 @@ func main() {
 	
 	
     flag.Parse()
-    fmt.Printf("%s %s crypt=%d server=%d %s\n", *src, *dest, *crypt, *servertype, *rootcer)
-	
+	fmt.Printf("%s -> %s crypt=%T server=%T %s\n", *src, *dest, *crypt, *servertype, *rootcer)
 	if *crypt {
 		if *servertype {
 			//server port

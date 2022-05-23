@@ -20,20 +20,29 @@ func (proxy *Proxy) ProxyClientHttpRequest(dest string, client net.Conn){
 	}
 	defer client.Close()
 	
-	var b [1024]byte
+	var b []byte
 	
 	server, err := net.Dial("tcp", dest)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	
-	//读取目标地址
-	n, err := client.Read(b[:])
-	if err != nil {
-		log.Println(err)
-		return
-	}
+
+    var n int = 0
+	//读取目标地址, 
+    var buffer bytes.Buffer
+    for n < 12 {
+        var bl [256]byte
+	    nl, errl := client.Read(bl[:])
+	    if errl != nil {
+		    log.Println(errl)
+		    return
+	    }
+        buffer.Write(bl[:nl])
+        n = n+nl
+    }
+    b = buffer.Bytes()
+
 	var firstmsg string
 	if n > 12 {
 		firstmsg = string(b[:12])
@@ -72,14 +81,22 @@ func (proxy *Proxy) ProxyClientTcpRequest(dest string, client net.Conn){
 		return
 	}
 	defer client.Close()
-	var b [1024]byte
+	var b []byte
+    var n int = 0
+	//读取目标地址, 
+    var buffer bytes.Buffer
+    for n < 12 {
+        var bl [256]byte
+	    nl, errl := client.Read(bl[:])
+	    if errl != nil {
+		    log.Println(errl)
+		    return
+	    }
+        buffer.Write(bl[:nl])
+        n = n+nl
+    }
+    b = buffer.Bytes()
 
-	//读取目标地址
-	n, err := client.Read(b[:])
-	if err != nil {
-		log.Println(err)
-		return
-	}
 	var firstmsg string
 	if n > 12 {
 		firstmsg = string(b[:12])

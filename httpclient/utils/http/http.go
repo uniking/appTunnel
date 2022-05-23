@@ -5,6 +5,7 @@ import (
 	"log"
 	"net"
 	"io"
+    "fmt"
 )
 
 type HttpProxy struct{
@@ -17,9 +18,14 @@ type HttpProxy struct{
 
 func (http *HttpProxy)Parse(content string){
     http.body = make(map[string]string)
-    
+    fmt.Println(content)
     lines := strings.Split(content, "\r\n")
     head := strings.Split(lines[0], " ")
+    if len(head) != 3{
+            http.path = "http"
+            return
+    }
+    
     http.method = head[0]
     http.path = head[1]
     http.version = head[2]
@@ -74,6 +80,7 @@ func (http *HttpProxy)BuildProxyData(content string) string{
     
     host := http.body["Host"]
     s := strings.Split(host, ":")
+    fmt.Println("host, ", host)
     if len(s) >= 2 {
         if s[1] == "80" {
             http.path = "http://" + delBlank(http.body["Host"]) + ":80" + http.path
