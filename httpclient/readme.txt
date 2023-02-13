@@ -1,3 +1,9 @@
+proxyClient.go tcp模式, 去掉头部直连服务器; http模式, 直连http代理
+tunnel.go 加解密隧道, 包含客户端和服务器, 客户端加密, 服务端解密
+tcpClient.go, tcpServer.go 自己用来测试的小例子
+
+
+
 tunnel 会话， tcp共享会话
 
 1, 客户端发起TCP连接
