@@ -45,9 +45,9 @@ func (proxy *Proxy) ProxyClientHttpRequest(dest string, client net.Conn){
 
 	var firstmsg string
 	if n > 12 {
-		firstmsg = string(b[:12])
+		firstmsg = string(b[1:64])
 	}else{
-		firstmsg = string(b[:n])
+		firstmsg = string(b[1:n])
 	}
 
 	
@@ -57,7 +57,8 @@ func (proxy *Proxy) ProxyClientHttpRequest(dest string, client net.Conn){
 		appendB := b[index+1:n]
         
         s := strings.Split(target_host, ":")
-        if len(s) == 3 {
+		//TARGET_HOST:uuid:appid:cn.bing.com:443
+        if len(s) == 5 {
             port := s[2]
             if port == "80" {
                 //http
@@ -99,22 +100,24 @@ func (proxy *Proxy) ProxyClientTcpRequest(dest string, client net.Conn){
 
 	var firstmsg string
 	if n > 12 {
-		firstmsg = string(b[:12])
+		firstmsg = string(b[1:64])
 	}else{
-		firstmsg = string(b[:n])
+		firstmsg = string(b[1:n])
 	}
 
+	////TARGET_HOST:uuid:appid:cn.bing.com:443
 	if strings.HasPrefix(firstmsg, "TARGET_HOST"){
 		index := bytes.IndexByte(b[:], '\n')
-		target_host := string(b[:index])
+		target_host := string(b[1:index])
 		appendB := b[index+1:n]
         
         s := strings.Split(target_host, ":")
-        if len(s) == 3 {
+        if len(s) == 5 {
+			log.Println("get TARGET_HOST", target_host)
             var tcpProxy tcp.TcpProxy
             tcpProxy.HandleClientRequest(client, target_host, appendB)
         }else{
-			log.Println("TARGET_HOST form error")
+			log.Println("TARGET_HOST form error ", target_host)
 		}
 	}else{
 		log.Println("proxy not start with TARGET_HOST")
